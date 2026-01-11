@@ -3,6 +3,7 @@
 """
 from labyrinth_game.constants import ROOMS
 
+
 def describe_current_room(game_state): #Описание комнат
     current_room = game_state["current_room"]
     room_info = ROOMS[current_room]
@@ -55,7 +56,10 @@ def solve_puzzle(game_state):
         print("Верно!")
         ROOMS[current_room]["puzzle"] = None
 
-        if current_room == "hall" and "treasure_key" not in game_state["player_inventory"]:
+        if (
+            current_room == "hall"
+            and "treasure_key" not in game_state["player_inventory"]
+        ):
             game_state["player_inventory"].append("treasure_key")
     else:
         print("Неверно. Попробуйте снова.")

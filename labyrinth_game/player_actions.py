@@ -1,7 +1,9 @@
 """
 Базовая механика - действия игрока
 """
+
 from labyrinth_game.constants import ROOMS
+
 
 def get_input(prompt="> "): #ввод пользователя
     try:
