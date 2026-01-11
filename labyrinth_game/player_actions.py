@@ -5,35 +5,51 @@
 from labyrinth_game.constants import ROOMS
 
 
-def get_input(prompt="> "): #ввод пользователя
+#Обработка команд
+def get_input(prompt="> "):
     try:
         return input(prompt).strip()
     except (KeyboardInterrupt, EOFError):
         print("\nВыход из игры.")
         return "quit"
-
-def show_inventory(game_state): #инвентарь игрока
+    
+#Инвентарь игрока
+def show_inventory(game_state):
     inventory = game_state['player_inventory']
     if inventory:
         print("\nВаш инвентарь:", ", ".join(inventory))
     else:
         print("\nВаш инвентарь пуст.")
 
-def move_player(game_state, direction): #функция перемещения игрока
+#Функция перемещения игрока
+def move_player(game_state, direction):
     current_room = game_state["current_room"]
     exits = ROOMS[current_room]["exits"]
 
-    if direction in exits:
-        game_state["current_room"] = exits[direction]
-        game_state["steps_taken"] += 1
-
-        from labyrinth_game.utils import describe_current_room
-
-        describe_current_room(game_state)
-    else:
+    if direction not in exits:
         print("Нельзя пойти в этом направлении.")
+        return
 
-def take_item(game_state, item_name): #функция взятия предмета
+    next_room = exits[direction]
+
+    if next_room == "treasure_room":
+        if "rusty_key" in game_state["player_inventory"]:
+            print("Вы используете найденный ключ, " \
+            "чтобы открыть путь в комнату сокровищ.")
+        else:
+            print("Дверь заперта. Нужен ключ, чтобы пройти дальше.")
+            return
+
+    game_state["current_room"] = next_room
+    game_state["steps_taken"] += 1
+
+    from labyrinth_game.utils import describe_current_room, random_event
+
+    describe_current_room(game_state)
+    random_event(game_state)
+
+#Функция взятия предмета
+def take_item(game_state, item_name):
     current_room = game_state["current_room"]
     room_items = ROOMS[current_room]["items"]
 
@@ -48,7 +64,8 @@ def take_item(game_state, item_name): #функция взятия предме�
     else:
         print("Такого предмета здесь нет.")
 
-def use_item(game_state, item_name): #функция использования предмета
+#Функция использования предметов
+def use_item(game_state, item_name):
     inventory = game_state["player_inventory"]
 
     if item_name not in inventory:
